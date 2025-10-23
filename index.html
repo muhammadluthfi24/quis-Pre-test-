@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-test Regresi Linier Ganda</title>
+<style>
+  body{background:#0f1724;color:#e6eef6;font-family:Inter,Arial;padding:30px}
+  .card{max-width:900px;margin:auto;background:#101a2c;padding:20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  h1{margin-top:0}
+  .timer{background:#12203a;padding:10px;border-radius:8px;margin-bottom:20px;color:#38bdf8;font-weight:bold}
+  .q{margin-bottom:14px}
+  label{display:block;margin-bottom:6px}
+  input[type=text]{padding:8px;border-radius:8px;border:none;margin-left:8px}
+  .btn{background:linear-gradient(90deg,#38bdf8,#60a5fa);color:#02101a;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+  .result{margin-top:16px;background:#0b1325;padding:14px;border-radius:10px;white-space:pre-line}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Pre-test Regresi Linier Ganda (Semester 6)</h1>
+  <p>Waktu berakhir otomatis: <b>13:15 WIB hari ini</b></p>
+
+  <div class="meta">
+    Nama: <input id="nama" type="text" placeholder="Nama lengkap">
+    NIM: <input id="nim" type="text" placeholder="NIM">
+  </div>
+
+  <div class="timer" id="timer">Waktu tersisa: --:--:--</div>
+
+  <div class="q">
+    <h3>1. Output uji F p=0.0002, uji t X₁=0.08, X₂=0.001. Interpretasi?</h3>
+    <label><input type="radio" name="q1" value="A"> A. Model tidak signifikan, hanya X₂ signifikan.</label>
+    <label><input type="radio" name="q1" value="B"> B. Model signifikan, hanya X₂ signifikan.</label>
+    <label><input type="radio" name="q1" value="C"> C. Semua signifikan.</label>
+    <label><input type="radio" name="q1" value="D"> D. Tidak ada yang signifikan.</label>
+  </div>
+
+  <div class="q">
+    <h3>2. Y = 10 + 2X₁ - 3X₂, jika X₁+5 dan X₂-2, perubahan Y?</h3>
+    <label><input type="radio" name="q2" value="A"> +10</label>
+    <label><input type="radio" name="q2" value="B"> +16</label>
+    <label><input type="radio" name="q2" value="C"> -10</label>
+    <label><input type="radio" name="q2" value="D"> +19</label>
+  </div>
+
+  <div class="q">
+    <h3>3. Jika multikolinearitas terjadi, dampak utamanya?</h3>
+    <label><input type="radio" name="q3" value="A"> A. R² turun drastis.</label>
+    <label><input type="radio" name="q3" value="B"> B. Koefisien tidak stabil, tanda bisa terbalik.</label>
+    <label><input type="radio" name="q3" value="C"> C. Residual tidak normal.</label>
+  </div>
+
+  <div class="q">
+    <h3>4. Output: R²=0.9459, AdjR²=0.941, F p=1.58e-14. Kesimpulan?</h3>
+    <label><input type="radio" name="q4" value="A"> A. Model menjelaskan 94% variasi Y, signifikan.</label>
+    <label><input type="radio" name="q4" value="B"> B. Tidak signifikan.</label>
+    <label><input type="radio" name="q4" value="C"> C. Overfitting.</label>
+  </div>
+
+  <div class="q">
+    <h3>5. Plot Residual vs Fitted melengkung, apa langkahnya?</h3>
+    <label><input type="radio" name="q5" value="A"> A. Tambah data.</label>
+    <label><input type="radio" name="q5" value="B"> B. Transformasi atau tambah variabel.</label>
+    <label><input type="radio" name="q5" value="C"> C. Hapus residual besar.</label>
+  </div>
+
+  <button class="btn" id="submitBtn">Kirim Jawaban</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScjO0TVfK4xMNwHD0za9HfSphNn_K55qyXPYifNXAVK7ow6YQ/formResponse';
+const entryNama = 'ENTRY_ID_NAMA';
+const entryNim = 'ENTRY_ID_NIM';
+const entryNilai = 'ENTRY_ID_NILAI';
+const entryJawaban = 'ENTRY_ID_JAWABAN';
+
+const timerEl=document.getElementById('timer');
+const submitBtn=document.getElementById('submitBtn');
+const resultEl=document.getElementById('result');
+
+let target=new Date();target.setHours(13,15,0,0);
+
+function updateTimer(){
+  let now=new Date(),diff=target-now;
+  if(diff<=0){timerEl.textContent="Waktu habis — soal dikunci.";submitBtn.disabled=true;document.querySelectorAll("input").forEach(e=>e.disabled=true);return;}
+  let h=Math.floor(diff/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  timerEl.textContent=`Waktu tersisa: ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+setInterval(updateTimer,1000);updateTimer();
+
+submitBtn.addEventListener('click',async()=>{
+  const nama=document.getElementById('nama').value.trim();
+  const nim=document.getElementById('nim').value.trim();
+  if(!nama||!nim){resultEl.textContent="Isi Nama dan NIM dulu.";return;}
+  let score=0;let kunci={q1:"B",q2:"B",q3:"B",q4:"A",q5:"B"};
+  for(let i=1;i<=5;i++){let r=document.querySelector(`input[name=q${i}]:checked`);if(r&&r.value===kunci[`q${i}`])score++;}
+  let nilai=(score/5*100).toFixed(0);
+  const jawaban=[];for(let i=1;i<=5;i++){let r=document.querySelector(`input[name=q${i}]:checked`);jawaban.push(`Q${i}:${r?r.value:'-'}`);}
+  const payload=new URLSearchParams();
+  payload.append(entryNama,nama);
+  payload.append(entryNim,nim);
+  payload.append(entryNilai,nilai);
+  payload.append(entryJawaban,jawaban.join(' | '));
+
+  try{
+    await fetch(formUrl,{method:'POST',mode:'no-cors',body:payload});
+    resultEl.textContent=`Nilai kamu: ${nilai}\nNama: ${nama}\nNIM: ${nim}\n\nSilakan screenshot hasil ini dan kirim ke Google Form yang terdapat di ela.`;
+    submitBtn.disabled=true;
+    document.querySelectorAll("input").forEach(e=>e.disabled=true);
+  }catch(e){resultEl.textContent="Gagal mengirim ke Google Form.";}
+});
+</script>
+</body>
+</html>
